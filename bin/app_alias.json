@@ -1,7 +1,4 @@
 {
-    "ops": {
-        "environment": "ops"
-    },
     "pr": {
         "application": "penrose"
     }

@@ -1,15 +1,85 @@
 #!/usr/bin/env python3
 import os, json
+import sys
+import re
 
-ALIASMAP="/etc/puppetlabs/bin/project_alias.json"
+
+ALIASMAP="/etc/puppetlabs/bin/app_alias.json"
 CLUSTERMAP="/etc/puppetlabs/cluster.conf.d/"
 
 # map project short code
+ENV="alpha"
+APP=""
+CLUSTER=""
+NODE=""
+NUM=""
+REGION=""
 
+hostname = sys.argv[1]
+
+ENVMAP={
+        "a": "alpha",
+        "b": "beta",
+        "p": "production",
+        "d": "alpha",
+        "s": "beta",
+        "t": "alpha"
+        }
+# $application-$environment-$role$number.$region
+# environment mapping
+# short   full       env         branch
+# a     = alpha      alpha       main
+# d     = dev        alpha       main
+# t     = test       alpha       main
+# b     = beta       beta        beta
+# s     = staging    beta        beta
+# p     = production production  production
+
+m = re.match(r'([a-zA-Z]+)-([abdpst])-([a-zA-Z]+)([0-9]+)\.([a-z-.0-9]+)', hostname)
+
+if m == None:
+    #try ops related matching
+    m = re.match(r'([a-zA-Z]+)-([a-zA-Z]+)([0-9]+)\.([a-z-.0-9]+)', hostname)
+    if m == None:
+        sys.exit(1)
+    APP=m.group(1)
+    ENV="alpha"
+    NODE=m.group(2)
+    NUM=m.group(3)
+    REGION=m.group(4)
+else:
+    APP=m.group(1)
+    ENV=ENVMAP[m.group(2)]
+    NODE=m.group(3)
+    NUM=m.group(4)
+    REGION=m.group(5)
+
+with open(ALIASMAP) as appalias:
+    amap = json.load(appalias)
+    if APP in amap:
+        APP = amap[APP]['application']
 
 # map hostname to cluster
 json_files = [pos_json for pos_json in os.listdir(CLUSTERMAP)]
 for index, js in enumerate(json_files):
     with open(os.path.join(CLUSTERMAP, js)) as json_file:
         json_text = json.load(json_file)
-        print(json_text)
+        for k,v in json_text.items():
+            m = re.match(k, hostname)
+            if m:
+                CLUSTER = v
+
+
+template="""
+---
+classes:
+  - {}::nodes::{}
+environment: {}
+parameters:
+  application: {}
+  cluster: {}
+  node: {}
+  servernum: {}
+""".format(APP, NODE, ENV, APP, CLUSTER, NODE, NUM)
+
+print(template)
