@@ -2,7 +2,7 @@ version: '3.5'
 services:
   puppet:
     container_name: puppet
-    image: puppet/puppetserver:7.8.0
+    build: .
     hostname: puppet
     volumes:
       - "/etc/puppetlabs/bin:/etc/puppetlabs/bin"

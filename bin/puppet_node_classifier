@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+import os, json
+
+ALIASMAP="/etc/puppetlabs/bin/project_alias.json"
+CLUSTERMAP="/etc/puppetlabs/cluster.conf.d/"
+
+# map project short code
+
+
+# map hostname to cluster
+json_files = [pos_json for pos_json in os.listdir(CLUSTERMAP)]
+for index, js in enumerate(json_files):
+    with open(os.path.join(CLUSTERMAP, js)) as json_file:
+        json_text = json.load(json_file)
+        print(json_text)
