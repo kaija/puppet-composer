@@ -13,11 +13,11 @@ services:
       - "/etc/puppetlabs/modules/main:/etc/puppetlabs/code/environments/alpha/modules"
       - "/etc/puppetlabs/modules/beta:/etc/puppetlabs/code/environments/beta/modules"
       - "/etc/puppetlabs/modules/production:/etc/puppetlabs/code/environments/production/modules"
-      - "/etc/puppetlabs/ssl:/etc/puppetlabs/puppet/ssl"
-      - "/etc/puppetlabs/ca:/etc/puppetlabs/puppetserver/ca"
       - "/etc/puppetlabs/cluster.conf.d:/etc/puppetlabs/cluster.conf.d"
-      - "/etc/puppetlabs/puppetserver:/opt/puppetlabs/server/data/puppetserver"
       - "/etc/puppetlabs/secrets:/etc/puppetlabs/puppet/secrets"
+      - "/etc/puppetlabs/server/ssl:/etc/puppetlabs/puppet/ssl"
+      - "/etc/puppetlabs/server/ca:/etc/puppetlabs/puppetserver/ca"
+      - "/etc/puppetlabs/server/puppetserver:/opt/puppetlabs/server/data/puppetserver"
     environment:
       - DNS_ALT_NAMES=puppet
       - PUPPETSERVER_HOSTNAME=puppet
