@@ -3,13 +3,23 @@ Puppet server composer
 
 
 
-Quick Start
+## Quick Start
+
+### setup puppet server
+
 ```
 curl -O https://raw.githubusercontent.com/kaija/puppet-composer/main/bootstrap.sh
 
 sudo bash bootstrap.sh
 ```
 
+
+### restart puppet server
+
+```
+cd /etc/puppetlabs
+docker-compose down && docker-compose up -d
+```
 
 
 ```
