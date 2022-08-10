@@ -1,0 +1,30 @@
+---
+# Hiera 5 Global configuration file
+
+version: 5
+
+defaults:
+  datadir: data
+  data_hash: yaml_data
+hierarchy:
+  - name: "full-match"
+    path: "%{trusted.certname}.yaml"
+  - name: "project-env-cluster"
+    path: "%{::project}_%{::environment}_%{::cluster}.yaml"
+  - name: "project-cluster-node"
+    path: "%{::project}_%{::cluster}_%{::node}.yaml"
+  - name: "project-node"
+    path: "%{::project}_%{::node}.yaml"
+  - name: "project-cluster"
+    path: "%{::project}_%{::cluster}.yaml"
+  - name: "project-env"
+    path: "%{::project}_%{::environment}.yaml"
+  - name: "node-wide"
+    path: "%{::node}.yaml"
+  - name: "project-wide"
+    path: "%{::project}.yaml"
+  - name: "domain"
+    path: "%{::domain}.yaml"
+  - name: "common"
+    path: common.yaml
+

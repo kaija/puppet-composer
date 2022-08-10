@@ -1,0 +1,9 @@
+[
+    {
+        "^ops-monitor[0-9].ap-northeast-1$": "staging"
+    },
+    {
+        "^ops-monitor[0-9].us-west-2$": "production"
+    }
+]
+

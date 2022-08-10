@@ -1,0 +1,69 @@
+version: '3.5'
+services:
+  puppet:
+    container_name: puppet
+    image: puppet/puppetserver:7.8.0
+    hostname: puppet
+    volumes:
+      - "/etc/puppetlabs/bin:/etc/puppetlabs/bin"
+      - "/etc/puppetlabs/docker-custom:/docker-custom-entrypoint.d"
+      - "/etc/puppetlabs/hiera.yaml:/etc/puppetlabs/puppet/hiera.yaml"
+      - "/etc/puppetlabs/hieradata:/etc/puppetlabs/puppet/data"
+      - "/etc/puppetlabs/modules/main:/etc/puppetlabs/code/environments/ops/modules"
+      - "/etc/puppetlabs/modules/main:/etc/puppetlabs/code/environments/alpha/modules"
+      - "/etc/puppetlabs/modules/beta:/etc/puppetlabs/code/environments/beta/modules"
+      - "/etc/puppetlabs/modules/production:/etc/puppetlabs/code/environments/production/modules"
+      - "/etc/puppetlabs/ssl:/etc/puppetlabs/puppet/ssl"
+      - "/etc/puppetlabs/cluster.conf.d:/etc/puppetlabs/cluster.conf.d"
+      - "/etc/puppetlabs/puppetserver:/opt/puppetlabs/server/data/puppetserver"
+      - "/etc/puppetlabs/secrets:/etc/puppetlabs/puppet/secrets"
+    environment:
+      - DNS_ALT_NAMES=puppet
+      - PUPPETSERVER_HOSTNAME=puppet
+      - AUTOSIGN=true
+      - CA_ALLOW_SUBJECT_ALT_NAMES=true
+      - PUPPETDB_SERVER_URLS=https://puppetdb:8081
+    ports:
+      - "8140:8140"
+    restart: always
+
+  postgres:
+    container_name: postgres
+    hostname: postgres
+    image: postgres:14.4-alpine
+    environment:
+      - POSTGRES_PASSWORD=puppetdbpassword
+      - POSTGRES_USER=puppetdb
+      - POSTGRES_DB=puppetdb
+    healthcheck:
+      # existence check for puppetdb database
+      test: [ 'CMD-SHELL', "psql --username=puppetdb puppetdb -c ''" ]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 90s
+    expose:
+      - 5432
+    volumes:
+      - /etc/puppetlabs/puppetdb/postgres-custom:/docker-entrypoint-initdb.d
+      - /etc/puppetlabs/puppetdb_postgres:/var/lib/postgresql/data
+
+  puppetdb:
+    container_name: puppetdb
+    hostname: puppetdb
+    image: puppet/puppetdb:7.10.0
+    environment:
+      - PUPPERWARE_ANALYTICS_ENABLED=false
+      - PUPPETDB_POSTGRES_HOSTNAME=postgres
+      - PUPPETDB_PASSWORD=puppetdbpassword
+      - PUPPETDB_USER=puppetdb
+      - PUPPETSERVER_HOSTNAME=puppet
+    ports:
+      - "8888:8080"
+      - "8081:8081"
+    volumes:
+      - /etc/puppetlabs/puppetdb/certs:/opt/puppetlabs/server/data/puppetdb/certs/
+    depends_on:
+      - postgres
+      - puppet
+
