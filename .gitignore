@@ -3,3 +3,4 @@ puppetdb
 puppetdb_postgres
 puppetserver
 ssl
+ca

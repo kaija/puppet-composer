@@ -14,6 +14,7 @@ services:
       - "/etc/puppetlabs/modules/beta:/etc/puppetlabs/code/environments/beta/modules"
       - "/etc/puppetlabs/modules/production:/etc/puppetlabs/code/environments/production/modules"
       - "/etc/puppetlabs/ssl:/etc/puppetlabs/puppet/ssl"
+      - "/etc/puppetlabs/ca:/etc/puppetlabs/puppetserver/ca"
       - "/etc/puppetlabs/cluster.conf.d:/etc/puppetlabs/cluster.conf.d"
       - "/etc/puppetlabs/puppetserver:/opt/puppetlabs/server/data/puppetserver"
       - "/etc/puppetlabs/secrets:/etc/puppetlabs/puppet/secrets"
@@ -26,6 +27,8 @@ services:
     ports:
       - "8140:8140"
     restart: always
+    depends_on:
+      - puppetdb
 
   postgres:
     container_name: postgres
@@ -65,5 +68,4 @@ services:
       - /etc/puppetlabs/puppetdb/certs:/opt/puppetlabs/server/data/puppetdb/certs/
     depends_on:
       - postgres
-      - puppet
 
