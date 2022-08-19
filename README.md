@@ -61,6 +61,11 @@ echo \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+curl -L -o docker-compose https://github.com/docker/compose/releases/download/v2.9.0/docker-compose-linux-x86_64
+chmod +x docker-compose
+sudo mv docker-compose /usr/local/bin/
+
 ```
 
 
